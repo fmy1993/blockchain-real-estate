@@ -165,6 +165,7 @@ services:
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric/
     command: /bin/bash
     volumes:
-      - ./../chaincode:/opt/gopath/src/github.com/togettoyou/blockchain-real-estate/chaincode # 链码路径注入
+      - ./../chaincode:/opt/gopath/src/github.com/fmy1993/blockchain-real-estate/chaincode # 链码路径注入
+      #- ./../chaincode:/opt/gopath/src/github.com/togettoyou/blockchain-real-estate/chaincode # 链码路径注入
       - ./config:/etc/hyperledger/config
       - ./crypto-config/peerOrganizations/org1.blockchainrealestate.com/:/etc/hyperledger/peer

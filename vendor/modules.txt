@@ -446,9 +446,6 @@ github.com/prometheus/common/model
 # github.com/prometheus/procfs v0.0.3
 github.com/prometheus/procfs
 github.com/prometheus/procfs/internal/fs
-# github.com/robfig/cron v1.2.0
-## explicit
-github.com/robfig/cron
 # github.com/robfig/cron/v3 v3.0.1
 ## explicit
 github.com/robfig/cron/v3
@@ -486,19 +483,6 @@ github.com/swaggo/swag
 # github.com/sykesm/zap-logfmt v0.0.4
 ## explicit
 github.com/sykesm/zap-logfmt
-# github.com/togettoyou/blockchain-real-estate v0.0.0-20210225030431-330c0099e6b4
-## explicit
-github.com/togettoyou/blockchain-real-estate/application/blockchain
-github.com/togettoyou/blockchain-real-estate/application/docs
-github.com/togettoyou/blockchain-real-estate/application/lib
-github.com/togettoyou/blockchain-real-estate/application/pkg/app
-github.com/togettoyou/blockchain-real-estate/application/pkg/setting
-github.com/togettoyou/blockchain-real-estate/application/routers
-github.com/togettoyou/blockchain-real-estate/application/routers/api/v1
-github.com/togettoyou/blockchain-real-estate/application/service
-github.com/togettoyou/blockchain-real-estate/chaincode/blockchain-real-estate/lib
-github.com/togettoyou/blockchain-real-estate/chaincode/blockchain-real-estate/routers
-github.com/togettoyou/blockchain-real-estate/chaincode/blockchain-real-estate/utils
 # github.com/ugorji/go/codec v1.1.13
 github.com/ugorji/go/codec
 # go.opencensus.io v0.22.0
@@ -648,5 +632,3 @@ gopkg.in/yaml.v2
 # gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
 gopkg.in/yaml.v3
 # blockchain-real-estate/github.com/togettoyou/blockchain-real-estate v0.0.0-20210225030431-330c0099e6b4 => blockchain-real-estate/github.com/fmy1993/blockchain-real-estate v0.1.1
-# blockchain-real-estate/github.com/togettoyou/blockchain-real-estate/application/blockchain v0.0.0-20210225030431-330c0099e6b4 => blockchain-real-estate/github.com/fmy1993/blockchain-real-estate/application/blockchain v0.1.1
-# blockchain-real-estate/github.com/togettoyou/blockchain-real-estate/application/lib v0.0.0-20210225030431-330c0099e6b4 => blockchain-real-estate/github.com/fmy1993/blockchain-real-estate/application/lib v0.1.1

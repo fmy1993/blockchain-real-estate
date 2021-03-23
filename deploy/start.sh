@@ -43,8 +43,8 @@ docker exec cli peer channel join -b assetschannel.block
 # -p 是目录，目录是基于cli这个docker里面的$GOPATH相对的
 # 此处安装的是示例链码，后续课程会自己编写
 echo "七、链码安装"
-docker exec cli peer chaincode install -n blockchain-real-estate -v 1.0.0 -l golang -p github.com/togettoyou/blockchain-real-estate/chaincode/blockchain-real-estate
-
+docker exec cli peer chaincode install -n blockchain-real-estate -v 1.0.0 -l golang -p github.com/fmy1993/blockchain-real-estate/chaincode/blockchain-real-estate
+#docker exec cli peer chaincode install -n blockchain-real-estate -v 1.0.0 -l golang -p github.com/togettoyou/blockchain-real-estate/chaincode/blockchain-real-estate
 #八、实例化链码
 #-n 对应前文安装链码的名字 其实就是composer network start bna名字
 #-v 为版本号，相当于composer network start bna名字@版本号
