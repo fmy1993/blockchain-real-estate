@@ -8,12 +8,12 @@ package main
 
 import (
 	"fmt"
+	"github.com/fmy1993/blockchain-real-estate/application/blockchain"
+	_ "github.com/fmy1993/blockchain-real-estate/application/docs"
+	"github.com/fmy1993/blockchain-real-estate/application/pkg/setting"
+	"github.com/fmy1993/blockchain-real-estate/application/routers"
+	"github.com/fmy1993/blockchain-real-estate/application/service"
 	"github.com/gin-gonic/gin"
-	"github.com/togettoyou/blockchain-real-estate/application/blockchain"
-	_ "github.com/togettoyou/blockchain-real-estate/application/docs"
-	"github.com/togettoyou/blockchain-real-estate/application/pkg/setting"
-	"github.com/togettoyou/blockchain-real-estate/application/routers"
-	"github.com/togettoyou/blockchain-real-estate/application/service"
 	"log"
 	"net/http"
 	"time"

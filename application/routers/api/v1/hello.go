@@ -1,5 +1,5 @@
 /**
- * @Author: 夜央 Oh oh oh oh oh oh (https://github.com/togettoyou)
+ * @Author: 夜央 Oh oh oh oh oh oh (https://github.com/fmy1993)
  * @Email: zoujh99@qq.com
  * @Date: 2020/3/3 11:24 下午
  * @Description: 测试api
@@ -7,8 +7,8 @@
 package v1
 
 import (
+	"github.com/fmy1993/blockchain-real-estate/application/pkg/app"
 	"github.com/gin-gonic/gin"
-	"github.com/togettoyou/blockchain-real-estate/application/pkg/app"
 	"net/http"
 )
 

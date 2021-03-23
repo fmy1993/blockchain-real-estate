@@ -10,9 +10,9 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	bc "github.com/fmy1993/blockchain-real-estate/application/blockchain"
+	"github.com/fmy1993/blockchain-real-estate/application/pkg/app"
 	"github.com/gin-gonic/gin"
-	bc "github.com/togettoyou/blockchain-real-estate/application/blockchain"
-	"github.com/togettoyou/blockchain-real-estate/application/pkg/app"
 	"net/http"
 	"strconv"
 )
