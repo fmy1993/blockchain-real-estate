@@ -10,19 +10,18 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"log"
-	"time"
-
-	"github.com/robfig/cron/v3"
+	"github.com/robfig/cron"
 	bc "github.com/togettoyou/blockchain-real-estate/application/blockchain"
 	"github.com/togettoyou/blockchain-real-estate/application/lib"
+	"log"
+	"time"
 )
 
 const spec = "0 0 0 * * ?" // 每天0点执行
 //const spec = "*/10 * * * * ?" //10秒执行一次，用于测试
 
 func Init() {
-	c := cron.New(cron.WithSeconds()) //支持到秒级别
+	c := cron.New(cron.WithSeconds())//支持到秒级别
 	_, err := c.AddFunc(spec, GoRun)
 	if err != nil {
 		log.Printf("定时任务开启失败 %s", err)

@@ -10,11 +10,12 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/robfig/cron"
-	bc "github.com/togettoyou/blockchain-real-estate/application/blockchain"
-	"github.com/togettoyou/blockchain-real-estate/application/lib"
 	"log"
 	"time"
+
+	bc "github.com/fmy1993/blockchain-real-estate/application/blockchain"
+	"github.com/fmy1993/blockchain-real-estate/application/lib"
+	"github.com/robfig/cron/v3"
 )
 
 const spec = "0 0 0 * * ?" // 每天0点执行
