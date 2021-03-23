@@ -39,7 +39,7 @@ require (
 	github.com/swaggo/gin-swagger v1.3.0
 	github.com/swaggo/swag v1.7.0
 	github.com/sykesm/zap-logfmt v0.0.4 // indirect
-	replace github.com/togettoyou/blockchain-real-estate v0.0.0-20210225030431-330c0099e6b4 => github.com/fmy1993/blockchain-real-estate 
+	//replace github.com/togettoyou/blockchain-real-estate v0.0.0-20210225030431-330c0099e6b4 => github.com/fmy1993/blockchain-real-estate 
 	go.uber.org/zap v1.16.0 // indirect
 	golang.org/x/crypto v0.0.0-20210317152858-513c2a44f670 // indirect
 	google.golang.org/grpc v1.36.0 // indirect
