@@ -4,6 +4,7 @@ import (
 	"html/template"
 	"os"
 	"regexp"
+	"strings"
 
 	"golang.org/x/net/webdav"
 
@@ -11,21 +12,58 @@ import (
 	"github.com/swaggo/swag"
 )
 
+// Config stores ginSwagger configuration variables.
+type Config struct {
+	//The url pointing to API definition (normally swagger.json or swagger.yaml). Default is `doc.json`.
+	URL         string
+	DeepLinking bool
+}
+
+// URL presents the url pointing to API definition (normally swagger.json or swagger.yaml).
+func URL(url string) func(c *Config) {
+	return func(c *Config) {
+		c.URL = url
+	}
+}
+
+// DeepLinking set the swagger deeplinking configuration
+func DeepLinking(deepLinking bool) func(c *Config) {
+	return func(c *Config) {
+		c.DeepLinking = deepLinking
+	}
+}
+
 // WrapHandler wraps `http.Handler` into `gin.HandlerFunc`.
-func WrapHandler(h *webdav.Handler) gin.HandlerFunc {
+func WrapHandler(h *webdav.Handler, confs ...func(c *Config)) gin.HandlerFunc {
+	defaultConfig := &Config{
+		URL:         "doc.json",
+		DeepLinking: true,
+	}
+
+	for _, c := range confs {
+		c(defaultConfig)
+	}
+
+	return CustomWrapHandler(defaultConfig, h)
+}
+
+// CustomWrapHandler wraps `http.Handler` into `gin.HandlerFunc`
+func CustomWrapHandler(config *Config, h *webdav.Handler) gin.HandlerFunc {
 	//create a template with name
 	t := template.New("swagger_index.html")
 	index, _ := t.Parse(swagger_index_templ)
 
-	type pro struct {
-		Host string
-	}
-
-	var re = regexp.MustCompile(`(.*)(index\.html|doc\.json|favicon-16x16\.png|favicon-32x32\.png|/oauth2-redirect\.html|swagger-ui\.css|swagger-ui\.css\.map|swagger-ui\.js|swagger-ui\.js\.map|swagger-ui-bundle\.js|swagger-ui-bundle\.js\.map|swagger-ui-standalone-preset\.js|swagger-ui-standalone-preset\.js\.map)[\?|.]*`)
+	var rexp = regexp.MustCompile(`(.*)(index\.html|doc\.json|favicon-16x16\.png|favicon-32x32\.png|/oauth2-redirect\.html|swagger-ui\.css|swagger-ui\.css\.map|swagger-ui\.js|swagger-ui\.js\.map|swagger-ui-bundle\.js|swagger-ui-bundle\.js\.map|swagger-ui-standalone-preset\.js|swagger-ui-standalone-preset\.js\.map)[\?|.]*`)
 
 	return func(c *gin.Context) {
+
+		type swaggerUIBundle struct {
+			URL         string
+			DeepLinking bool
+		}
+
 		var matches []string
-		if matches = re.FindStringSubmatch(c.Request.RequestURI); len(matches) != 3 {
+		if matches = rexp.FindStringSubmatch(c.Request.RequestURI); len(matches) != 3 {
 			c.Status(404)
 			c.Writer.Write([]byte("404 page not found"))
 			return
@@ -34,19 +72,31 @@ func WrapHandler(h *webdav.Handler) gin.HandlerFunc {
 		prefix := matches[1]
 		h.Prefix = prefix
 
+		if strings.HasSuffix(path, ".html") {
+			c.Header("Content-Type", "text/html; charset=utf-8")
+		} else if strings.HasSuffix(path, ".css") {
+			c.Header("Content-Type", "text/css; charset=utf-8")
+		} else if strings.HasSuffix(path, ".js") {
+			c.Header("Content-Type", "application/javascript")
+		} else if strings.HasSuffix(path, ".json") {
+			c.Header("Content-Type", "application/json")
+		}
+
 		switch path {
 		case "index.html":
-			s := &pro{
-				Host: "doc.json", //TODO: provide to customs?
-			}
-			index.Execute(c.Writer, s)
+			index.Execute(c.Writer, &swaggerUIBundle{
+				URL:         config.URL,
+				DeepLinking: config.DeepLinking,
+			})
 		case "doc.json":
-			doc, _ := swag.ReadDoc()
+			doc, err := swag.ReadDoc()
+			if err != nil {
+				panic(err)
+			}
 			c.Writer.Write([]byte(doc))
 			return
 		default:
 			h.ServeHTTP(c.Writer, c.Request)
-
 		}
 	}
 }
@@ -64,6 +114,21 @@ func DisablingWrapHandler(h *webdav.Handler, envName string) gin.HandlerFunc {
 	}
 
 	return WrapHandler(h)
+}
+
+// DisablingCustomWrapHandler turn handler off
+// if specified environment variable passed
+func DisablingCustomWrapHandler(config *Config, h *webdav.Handler, envName string) gin.HandlerFunc {
+	eFlag := os.Getenv(envName)
+	if eFlag != "" {
+		return func(c *gin.Context) {
+			// Simulate behavior when route unspecified and
+			// return 404 HTTP code
+			c.String(404, "")
+		}
+	}
+
+	return CustomWrapHandler(config, h)
 }
 
 const swagger_index_templ = `<!-- HTML for static distribution bundle build -->
@@ -141,7 +206,7 @@ const swagger_index_templ = `<!-- HTML for static distribution bundle build -->
 window.onload = function() {
   // Build a system
   const ui = SwaggerUIBundle({
-    url: "{{.Host}}",
+    url: "{{.URL}}",
     dom_id: '#swagger-ui',
     validatorUrl: null,
     presets: [
@@ -151,7 +216,8 @@ window.onload = function() {
     plugins: [
       SwaggerUIBundle.plugins.DownloadUrl
     ],
-    layout: "StandaloneLayout"
+	layout: "StandaloneLayout",
+	deepLinking: {{.DeepLinking}}
   })
 
   window.ui = ui

@@ -11,11 +11,13 @@ import (
 	"crypto/x509"
 	"reflect"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 
 	"github.com/hyperledger/fabric-sdk-go/pkg/common/errors/multi"
 	"github.com/hyperledger/fabric-sdk-go/pkg/common/errors/retry"
+	"github.com/hyperledger/fabric-sdk-go/pkg/common/errors/status"
 	"github.com/hyperledger/fabric-sdk-go/pkg/common/logging"
 	"github.com/hyperledger/fabric-sdk-go/pkg/common/providers/core"
 	"github.com/hyperledger/fabric-sdk-go/pkg/common/providers/fab"
@@ -27,9 +29,12 @@ import (
 	"github.com/hyperledger/fabric-sdk-go/pkg/util/pathvar"
 	"github.com/mitchellh/mapstructure"
 	"github.com/pkg/errors"
+	grpcCodes "google.golang.org/grpc/codes"
 )
 
 var logger = logging.NewLogger("fabsdk/fab")
+var defaultOrdererListenPort = 7050
+var defaultPeerListenPort = 7051
 
 const (
 	defaultPeerConnectionTimeout          = time.Second * 10
@@ -73,6 +78,23 @@ const (
 )
 
 var (
+	defaultDiscoveryRetryableCodes = map[status.Group][]status.Code{
+		status.GRPCTransportStatus: {
+			status.Code(grpcCodes.Unavailable),
+		},
+		status.DiscoveryServerStatus: {
+			status.QueryEndorsers,
+		},
+	}
+
+	defaultDiscoveryRetryOpts = retry.Opts{
+		Attempts:       6,
+		InitialBackoff: 500 * time.Millisecond,
+		MaxBackoff:     5 * time.Second,
+		BackoffFactor:  1.75,
+		RetryableCodes: defaultDiscoveryRetryableCodes,
+	}
+
 	defaultChannelPolicies = &ChannelPolicies{
 		QueryChannelConfig: QueryChannelConfigPolicy{
 			MaxTargets:   defaultMaxTargets,
@@ -82,7 +104,7 @@ var (
 		Discovery: DiscoveryPolicy{
 			MaxTargets:   defaultMaxTargets,
 			MinResponses: defaultMinResponses,
-			RetryOpts:    retry.Opts{},
+			RetryOpts:    defaultDiscoveryRetryOpts,
 		},
 		Selection: SelectionPolicy{
 			SortingStrategy:         BlockHeightPriority,
@@ -122,7 +144,7 @@ func ConfigFromBackend(coreBackend ...core.ConfigBackend) (fab.EndpointConfig, e
 type EndpointConfig struct {
 	backend                  *lookup.ConfigLookup
 	networkConfig            *fab.NetworkConfig
-	tlsCertPool              fab.CertPool
+	tlsCertPool              commtls.CertPool
 	entityMatchers           *entityMatchers
 	peerConfigsByOrg         map[string][]fab.PeerConfig
 	networkPeers             []fab.NetworkPeer
@@ -171,7 +193,7 @@ func (c *EndpointConfig) OrderersConfig() []fab.OrdererConfig {
 }
 
 // OrdererConfig returns the requested orderer
-func (c *EndpointConfig) OrdererConfig(nameOrURL string) (*fab.OrdererConfig, bool) {
+func (c *EndpointConfig) OrdererConfig(nameOrURL string) (*fab.OrdererConfig, bool, bool) {
 	return c.tryMatchingOrdererConfig(nameOrURL, true)
 }
 
@@ -264,7 +286,7 @@ func (c *EndpointConfig) ChannelOrderers(name string) []fab.OrdererConfig {
 
 // TLSCACertPool returns the configured cert pool. If a certConfig
 // is provided, the certificate is added to the pool
-func (c *EndpointConfig) TLSCACertPool() fab.CertPool {
+func (c *EndpointConfig) TLSCACertPool() commtls.CertPool {
 	return c.tlsCertPool
 }
 
@@ -394,43 +416,43 @@ func (c *EndpointConfig) getTimeout(tType fab.TimeoutType) time.Duration { //nol
 
 func (c *EndpointConfig) loadEndpointConfiguration() error {
 
-	endpointConfigEntity := endpointConfigEntity{}
+	endpointConfigurationEntity := endpointConfigEntity{}
 
-	err := c.backend.UnmarshalKey("client", &endpointConfigEntity.Client)
-	logger.Debugf("Client is: %+v", endpointConfigEntity.Client)
+	err := c.backend.UnmarshalKey("client", &endpointConfigurationEntity.Client)
+	logger.Debugf("Client is: %+v", endpointConfigurationEntity.Client)
 	if err != nil {
-		return errors.WithMessage(err, "failed to parse 'client' config item to endpointConfigEntity.Client type")
+		return errors.WithMessage(err, "failed to parse 'client' config item to endpointConfigurationEntity.Client type")
 	}
 
 	err = c.backend.UnmarshalKey(
-		"channels", &endpointConfigEntity.Channels,
+		"channels", &endpointConfigurationEntity.Channels,
 		lookup.WithUnmarshalHookFunction(peerChannelConfigHookFunc()),
 	)
-	logger.Debugf("channels are: %+v", endpointConfigEntity.Channels)
+	logger.Debugf("channels are: %+v", endpointConfigurationEntity.Channels)
 	if err != nil {
-		return errors.WithMessage(err, "failed to parse 'channels' config item to endpointConfigEntity.Channels type")
+		return errors.WithMessage(err, "failed to parse 'channels' config item to endpointConfigurationEntity.Channels type")
 	}
 
-	err = c.backend.UnmarshalKey("organizations", &endpointConfigEntity.Organizations)
-	logger.Debugf("organizations are: %+v", endpointConfigEntity.Organizations)
+	err = c.backend.UnmarshalKey("organizations", &endpointConfigurationEntity.Organizations)
+	logger.Debugf("organizations are: %+v", endpointConfigurationEntity.Organizations)
 	if err != nil {
-		return errors.WithMessage(err, "failed to parse 'organizations' config item to endpointConfigEntity.Organizations type")
+		return errors.WithMessage(err, "failed to parse 'organizations' config item to endpointConfigurationEntity.Organizations type")
 	}
 
-	err = c.backend.UnmarshalKey("orderers", &endpointConfigEntity.Orderers)
-	logger.Debugf("orderers are: %+v", endpointConfigEntity.Orderers)
+	err = c.backend.UnmarshalKey("orderers", &endpointConfigurationEntity.Orderers)
+	logger.Debugf("orderers are: %+v", endpointConfigurationEntity.Orderers)
 	if err != nil {
-		return errors.WithMessage(err, "failed to parse 'orderers' config item to endpointConfigEntity.Orderers type")
+		return errors.WithMessage(err, "failed to parse 'orderers' config item to endpointConfigurationEntity.Orderers type")
 	}
 
-	err = c.backend.UnmarshalKey("peers", &endpointConfigEntity.Peers)
-	logger.Debugf("peers are: %+v", endpointConfigEntity.Peers)
+	err = c.backend.UnmarshalKey("peers", &endpointConfigurationEntity.Peers)
+	logger.Debugf("peers are: %+v", endpointConfigurationEntity.Peers)
 	if err != nil {
-		return errors.WithMessage(err, "failed to parse 'peers' config item to endpointConfigEntity.Peers type")
+		return errors.WithMessage(err, "failed to parse 'peers' config item to endpointConfigurationEntity.Peers type")
 	}
 
 	//load all endpointconfig entities
-	err = c.loadEndpointConfigEntities(&endpointConfigEntity)
+	err = c.loadEndpointConfigEntities(&endpointConfigurationEntity)
 	if err != nil {
 		return errors.WithMessage(err, "failed to load channel configs")
 	}
@@ -524,10 +546,7 @@ func (c *EndpointConfig) loadDefaultConfigItems(configEntity *endpointConfigEnti
 	}
 
 	//default channel policies
-	err = c.loadDefaultChannelPolicies(configEntity)
-	if err != nil {
-		return errors.WithMessage(err, "failed to load default channel policies")
-	}
+	c.loadDefaultChannelPolicies(configEntity)
 	return nil
 }
 
@@ -822,7 +841,7 @@ func (c *EndpointConfig) loadAllPeerConfigs(networkConfig *fab.NetworkConfig, en
 		if err != nil {
 			return errors.WithMessage(err, "failed to load peer network config")
 		}
-		networkConfig.Peers[name] = c.addMissingPeerConfigItems(fab.PeerConfig{
+		networkConfig.Peers[name] = c.addMissingPeerConfigItems(name, fab.PeerConfig{
 			URL:         peerConfig.URL,
 			GRPCOptions: peerConfig.GRPCOptions,
 			TLSCACert:   tlsCert,
@@ -842,7 +861,7 @@ func (c *EndpointConfig) loadAllOrdererConfigs(networkConfig *fab.NetworkConfig,
 		if err != nil {
 			return errors.WithMessage(err, "failed to load orderer network config")
 		}
-		networkConfig.Orderers[name] = c.addMissingOrdererConfigItems(fab.OrdererConfig{
+		networkConfig.Orderers[name] = c.addMissingOrdererConfigItems(name, fab.OrdererConfig{
 			URL:         ordererConfig.URL,
 			GRPCOptions: ordererConfig.GRPCOptions,
 			TLSCACert:   tlsCert,
@@ -851,11 +870,15 @@ func (c *EndpointConfig) loadAllOrdererConfigs(networkConfig *fab.NetworkConfig,
 	return nil
 }
 
-func (c *EndpointConfig) addMissingPeerConfigItems(config fab.PeerConfig) fab.PeerConfig {
+func (c *EndpointConfig) addMissingPeerConfigItems(name string, config fab.PeerConfig) fab.PeerConfig {
 
 	// peer URL
 	if config.URL == "" {
-		config.URL = c.defaultPeerConfig.URL
+		if c.defaultPeerConfig.URL == "" {
+			config.URL = name + ":" + strconv.Itoa(defaultPeerListenPort)
+		} else {
+			config.URL = c.defaultPeerConfig.URL
+		}
 	}
 
 	//tls ca certs
@@ -880,10 +903,14 @@ func (c *EndpointConfig) addMissingPeerConfigItems(config fab.PeerConfig) fab.Pe
 	return config
 }
 
-func (c *EndpointConfig) addMissingOrdererConfigItems(config fab.OrdererConfig) fab.OrdererConfig {
+func (c *EndpointConfig) addMissingOrdererConfigItems(name string, config fab.OrdererConfig) fab.OrdererConfig {
 	// orderer URL
 	if config.URL == "" {
-		config.URL = c.defaultOrdererConfig.URL
+		if c.defaultOrdererConfig.URL == "" {
+			config.URL = name + ":" + strconv.Itoa(defaultOrdererListenPort)
+		} else {
+			config.URL = c.defaultOrdererConfig.URL
+		}
 	}
 
 	//tls ca certs
@@ -962,7 +989,7 @@ func (c *EndpointConfig) loadDefaultOrderer(configEntity *endpointConfigEntity) 
 	return nil
 }
 
-func (c *EndpointConfig) loadDefaultChannelPolicies(configEntity *endpointConfigEntity) error {
+func (c *EndpointConfig) loadDefaultChannelPolicies(configEntity *endpointConfigEntity) {
 
 	var defaultChPolicies fab.ChannelPolicies
 	defaultChannel, ok := configEntity.Channels[defaultEntity]
@@ -979,7 +1006,6 @@ func (c *EndpointConfig) loadDefaultChannelPolicies(configEntity *endpointConfig
 
 	c.defaultChannelPolicies = defaultChPolicies
 
-	return nil
 }
 
 func (c *EndpointConfig) loadDefaultDiscoveryPolicy(policy *fab.DiscoveryPolicy) {
@@ -989,6 +1015,10 @@ func (c *EndpointConfig) loadDefaultDiscoveryPolicy(policy *fab.DiscoveryPolicy)
 
 	if policy.MinResponses == 0 {
 		policy.MinResponses = defaultMinResponses
+	}
+
+	if len(policy.RetryOpts.RetryableCodes) == 0 {
+		policy.RetryOpts.RetryableCodes = defaultDiscoveryRetryableCodes
 	}
 }
 
@@ -1252,8 +1282,8 @@ func (c *EndpointConfig) loadOrdererConfigs() error {
 	ordererConfigs := []fab.OrdererConfig{}
 	for name := range c.networkConfig.Orderers {
 
-		matchedOrderer, ok := c.tryMatchingOrdererConfig(name, false)
-		if !ok {
+		matchedOrderer, ok, ignoreOrderer := c.tryMatchingOrdererConfig(name, false)
+		if !ok || ignoreOrderer {
 			continue
 		}
 
@@ -1315,7 +1345,11 @@ func (c *EndpointConfig) loadChannelOrderers() error {
 		orderers := []fab.OrdererConfig{}
 		for _, ordererName := range channelConfig.Orderers {
 
-			orderer, ok := c.tryMatchingOrdererConfig(strings.ToLower(ordererName), false)
+			orderer, ok, ignoreOrderer := c.tryMatchingOrdererConfig(strings.ToLower(ordererName), false)
+			if ignoreOrderer {
+				continue
+			}
+
 			if !ok {
 				return errors.Errorf("Could not find Orderer Config for channel orderer [%s]", ordererName)
 			}
@@ -1372,9 +1406,9 @@ func (c *EndpointConfig) loadTLSClientCerts(configEntity *endpointConfigEntity) 
 	// If CryptoSuite fails to load private key from cert then load private key from config
 	if err != nil || pk == nil {
 		logger.Debugf("Reading pk from config, unable to retrieve from cert: %s", err)
-		tlsClientCerts, err := c.loadPrivateKeyFromConfig(&configEntity.Client, clientCerts, cb)
-		if err != nil {
-			return errors.WithMessage(err, "failed to load TLS client certs")
+		tlsClientCerts, error := c.loadPrivateKeyFromConfig(&configEntity.Client, clientCerts, cb)
+		if error != nil {
+			return errors.WithMessage(error, "failed to load TLS client certs")
 		}
 		c.tlsClientCerts = tlsClientCerts
 		return nil
@@ -1428,7 +1462,11 @@ func (c *EndpointConfig) tryMatchingPeerConfig(peerSearchKey string, searchByURL
 		//lookup by URL
 		for _, staticPeerConfig := range c.networkConfig.Peers {
 			if strings.EqualFold(staticPeerConfig.URL, peerSearchKey) {
-				return &staticPeerConfig, true
+				return &fab.PeerConfig{
+					URL:         staticPeerConfig.URL,
+					GRPCOptions: staticPeerConfig.GRPCOptions,
+					TLSCACert:   staticPeerConfig.TLSCACert,
+				}, true
 			}
 		}
 	}
@@ -1447,7 +1485,7 @@ func (c *EndpointConfig) tryMatchingPeerConfig(peerSearchKey string, searchByURL
 func (c *EndpointConfig) matchPeer(peerSearchKey string, matcher matcherEntry) (*fab.PeerConfig, bool) {
 
 	if matcher.matchConfig.IgnoreEndpoint {
-		logger.Debugf(" Ignoring peer `%s` since entity matcher IgnoreEndpoint flag is on", peerSearchKey)
+		logger.Debugf("Ignoring peer `%s` since entity matcher IgnoreEndpoint flag is on", peerSearchKey)
 		return nil, false
 	}
 
@@ -1505,7 +1543,7 @@ func (c *EndpointConfig) getMappedPeer(host string) *fab.PeerConfig {
 	return &mappedConfig
 }
 
-func (c *EndpointConfig) tryMatchingOrdererConfig(ordererSearchKey string, searchByURL bool) (*fab.OrdererConfig, bool) {
+func (c *EndpointConfig) tryMatchingOrdererConfig(ordererSearchKey string, searchByURL bool) (*fab.OrdererConfig, bool, bool) {
 
 	//loop over orderer entity matchers to find the matching orderer
 	for _, matcher := range c.ordererMatchers {
@@ -1518,14 +1556,18 @@ func (c *EndpointConfig) tryMatchingOrdererConfig(ordererSearchKey string, searc
 	//direct lookup if orderer matchers are not configured or no matchers matched
 	orderer, ok := c.networkConfig.Orderers[strings.ToLower(ordererSearchKey)]
 	if ok {
-		return &orderer, true
+		return &orderer, true, false
 	}
 
 	if searchByURL {
 		//lookup by URL
 		for _, ordererCfg := range c.OrderersConfig() {
 			if strings.EqualFold(ordererCfg.URL, ordererSearchKey) {
-				return &ordererCfg, true
+				return &fab.OrdererConfig{
+					URL:         ordererCfg.URL,
+					GRPCOptions: ordererCfg.GRPCOptions,
+					TLSCACert:   ordererCfg.TLSCACert,
+				}, true, false
 			}
 		}
 	}
@@ -1536,17 +1578,19 @@ func (c *EndpointConfig) tryMatchingOrdererConfig(ordererSearchKey string, searc
 			URL:         ordererSearchKey,
 			GRPCOptions: c.defaultOrdererConfig.GRPCOptions,
 			TLSCACert:   c.defaultOrdererConfig.TLSCACert,
-		}, true
+		}, true, false
 	}
 
-	return nil, false
+	return nil, false, false
 }
 
-func (c *EndpointConfig) matchOrderer(ordererSearchKey string, matcher matcherEntry) (*fab.OrdererConfig, bool) {
+func (c *EndpointConfig) matchOrderer(ordererSearchKey string, matcher matcherEntry) (*fab.OrdererConfig, bool, bool) {
 
 	if matcher.matchConfig.IgnoreEndpoint {
-		logger.Debugf(" Ignoring peer `%s` since entity matcher IgnoreEndpoint flag is on", ordererSearchKey)
-		return nil, false
+		logger.Debugf(" Ignoring orderer `%s` since entity matcher IgnoreEndpoint flag is on", ordererSearchKey)
+		// IgnoreEndpoint must force ignoring this matching orderer (weather found or not) and must be explicitly
+		// mentioned. The third argument is explicitly used for this, all other cases will return false.
+		return nil, false, true
 	}
 
 	mappedHost := c.regexMatchAndReplace(matcher.regex, ordererSearchKey, matcher.matchConfig.MappedHost)
@@ -1555,7 +1599,7 @@ func (c *EndpointConfig) matchOrderer(ordererSearchKey string, matcher matcherEn
 	matchedOrderer := c.getMappedOrderer(mappedHost)
 	if matchedOrderer == nil {
 		logger.Debugf("Could not find mapped host [%s] for orderer [%s]", matcher.matchConfig.MappedHost, ordererSearchKey)
-		return nil, false
+		return nil, false, false
 	}
 
 	//URLSubstitutionExp if found use from entity matcher otherwise use from mapped host
@@ -1573,7 +1617,7 @@ func (c *EndpointConfig) matchOrderer(ordererSearchKey string, matcher matcherEn
 		matchedOrderer.URL = c.getDefaultMatchingURL(ordererSearchKey)
 	}
 
-	return matchedOrderer, true
+	return matchedOrderer, true, false
 }
 
 func (c *EndpointConfig) getMappedOrderer(host string) *fab.OrdererConfig {
@@ -1598,26 +1642,26 @@ func (c *EndpointConfig) getMappedOrderer(host string) *fab.OrdererConfig {
 
 func (c *EndpointConfig) compileMatchers() error {
 
-	entityMatchers := entityMatchers{}
+	entMatchers := entityMatchers{}
 
-	err := c.backend.UnmarshalKey("entityMatchers", &entityMatchers.matchers)
-	logger.Debugf("Matchers are: %+v", entityMatchers)
+	err := c.backend.UnmarshalKey("entityMatchers", &entMatchers.matchers)
+	logger.Debugf("Matchers are: %+v", entMatchers)
 	if err != nil {
-		return errors.WithMessage(err, "failed to parse 'entityMatchers' config item")
+		return errors.WithMessage(err, "failed to parse 'entMatchers' config item")
 	}
 
 	//return no error if entityMatchers is not configured
-	if len(entityMatchers.matchers) == 0 {
+	if len(entMatchers.matchers) == 0 {
 		logger.Debug("Entity matchers are not configured")
 		return nil
 	}
 
-	err = c.compileAllMatchers(&entityMatchers)
+	err = c.compileAllMatchers(&entMatchers)
 	if err != nil {
 		return err
 	}
 
-	c.entityMatchers = &entityMatchers
+	c.entityMatchers = &entMatchers
 	return nil
 }
 

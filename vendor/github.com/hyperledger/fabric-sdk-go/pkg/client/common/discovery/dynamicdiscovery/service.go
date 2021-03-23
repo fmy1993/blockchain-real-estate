@@ -7,7 +7,6 @@ SPDX-License-Identifier: Apache-2.0
 package dynamicdiscovery
 
 import (
-	"context"
 	"sync"
 	"time"
 
@@ -20,13 +19,8 @@ import (
 	"github.com/pkg/errors"
 )
 
-// DiscoveryClient is the client to the discovery service
-type DiscoveryClient interface {
-	Send(ctx context.Context, req *discclient.Request, targets ...fab.PeerConfig) ([]fabdiscovery.Response, error)
-}
-
 // clientProvider is overridden by unit tests
-var clientProvider = func(ctx contextAPI.Client) (DiscoveryClient, error) {
+var clientProvider = func(ctx contextAPI.Client) (fabdiscovery.Client, error) {
 	return fabdiscovery.New(ctx)
 }
 
@@ -37,49 +31,38 @@ type service struct {
 	responseTimeout time.Duration
 	lock            sync.RWMutex
 	ctx             contextAPI.Client
-	discClient      DiscoveryClient
+	discClient      fabdiscovery.Client
 	peersRef        *lazyref.Reference
-	lastErr         error
+	ErrHandler      fab.ErrorHandler
 }
 
 type queryPeers func() ([]fab.Peer, error)
 
 func newService(config fab.EndpointConfig, query queryPeers, opts ...coptions.Opt) *service {
-	options := options{}
-	coptions.Apply(&options, opts)
+	opt := options{}
+	coptions.Apply(&opt, opts)
 
-	if options.refreshInterval == 0 {
-		options.refreshInterval = config.Timeout(fab.DiscoveryServiceRefresh)
+	if opt.refreshInterval == 0 {
+		opt.refreshInterval = config.Timeout(fab.DiscoveryServiceRefresh)
 	}
 
-	if options.responseTimeout == 0 {
-		options.responseTimeout = config.Timeout(fab.DiscoveryResponse)
+	if opt.responseTimeout == 0 {
+		opt.responseTimeout = config.Timeout(fab.DiscoveryResponse)
 	}
 
-	logger.Debugf("Cache refresh interval: %s", options.refreshInterval)
-	logger.Debugf("Deliver service response timeout: %s", options.responseTimeout)
+	logger.Debugf("Cache refresh interval: %s", opt.refreshInterval)
+	logger.Debugf("Deliver service response timeout: %s", opt.responseTimeout)
 
-	s := &service{
-		responseTimeout: options.responseTimeout,
+	return &service{
+		responseTimeout: opt.responseTimeout,
+		ErrHandler:      opt.errHandler,
+		peersRef: lazyref.New(
+			func() (interface{}, error) {
+				return query()
+			},
+			lazyref.WithRefreshInterval(lazyref.InitOnFirstAccess, opt.refreshInterval),
+		),
 	}
-
-	s.peersRef = lazyref.New(
-		func() (interface{}, error) {
-			peers, err := query()
-			if err != nil {
-				derr, ok := err.(*discoveryError)
-				if ok && derr.IsFatal() {
-					logger.Warnf("Got fatal error [%s]. Closing discovery client.", err)
-					s.lastErr = err
-					go func() { s.Close() }()
-				}
-			}
-			return peers, err
-		},
-		lazyref.WithRefreshInterval(lazyref.InitOnFirstAccess, options.refreshInterval),
-	)
-
-	return s
 }
 
 // initialize initializes the service with client context
@@ -113,9 +96,6 @@ func (s *service) Close() {
 // GetPeers returns the available peers
 func (s *service) GetPeers() ([]fab.Peer, error) {
 	if s.peersRef.IsClosed() {
-		if s.lastErr != nil {
-			return nil, errors.Errorf("Discovery client has been closed due to error: %s", s.lastErr)
-		}
 		return nil, errors.Errorf("Discovery client has been closed")
 	}
 
@@ -136,7 +116,7 @@ func (s *service) context() contextAPI.Client {
 	return s.ctx
 }
 
-func (s *service) discoveryClient() DiscoveryClient {
+func (s *service) discoveryClient() fabdiscovery.Client {
 	s.lock.RLock()
 	defer s.lock.RUnlock()
 	return s.discClient
