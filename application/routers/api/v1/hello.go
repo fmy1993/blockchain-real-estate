@@ -23,7 +23,7 @@ func Hello(c *gin.Context) {
 	appG := app.Gin{C: c}
 	BciResp := bc.ChannelQueryBlockinfo()
 	//appG.Response(http.StatusOK, "成功", bci.BlockchainInfo.GetCurrentBlockHash())
-	appG.Response(http.StatusOK, "chenggong", map[string]interface{}{
+	appG.Response(http.StatusOK, "成功", map[string]interface{}{
 		"当前区块hash值": BciResp.BCI.CurrentBlockHash,
 		"前区块hash值":  BciResp.BCI.PreviousBlockHash,
 		"区块高度":      BciResp.BCI.Height,

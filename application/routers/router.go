@@ -8,12 +8,13 @@ package routers
 
 import (
 	"fmt"
+	"net/http"
+	"strings"
+
 	v1 "github.com/fmy1993/blockchain-real-estate/application/routers/api/v1"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
-	"net/http"
-	"strings"
 )
 
 //初始化路由信息
@@ -27,6 +28,7 @@ func InitRouter() *gin.Engine {
 	apiV1 := r.Group("/api/v1")
 	{
 		apiV1.GET("/hello", v1.Hello)
+		apiV1.GET("/getBlockInfo", v1.GetBlockInfo)
 		apiV1.POST("/queryAccountList", v1.QueryAccountList)
 		apiV1.POST("/createRealEstate", v1.CreateRealEstate)
 		apiV1.POST("/queryRealEstateList", v1.QueryRealEstateList)

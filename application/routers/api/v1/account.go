@@ -10,10 +10,11 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"net/http"
+
 	bc "github.com/fmy1993/blockchain-real-estate/application/blockchain"
 	"github.com/fmy1993/blockchain-real-estate/application/pkg/app"
 	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
 type AccountIdBody struct {

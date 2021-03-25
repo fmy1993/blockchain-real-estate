@@ -8,26 +8,27 @@ package main
 
 import (
 	"fmt"
+	"log"
+	"net/http"
+	"time"
+
 	"github.com/fmy1993/blockchain-real-estate/application/blockchain"
 	_ "github.com/fmy1993/blockchain-real-estate/application/docs"
 	"github.com/fmy1993/blockchain-real-estate/application/pkg/setting"
 	"github.com/fmy1993/blockchain-real-estate/application/routers"
 	"github.com/fmy1993/blockchain-real-estate/application/service"
 	"github.com/gin-gonic/gin"
-	"log"
-	"net/http"
-	"time"
 )
 
 func init() {
 	setting.Setup()
 }
 
-// @title 基于区块链技术的房地产交易系统api文档
+// @title 基于区块链技术的农产品溯源系统api文档
 // @version 1.0
 // @description 基于区块链技术的房地产交易系统api文档
-// @contact.name 夜央 Oh oh oh oh oh oh
-// @contact.email zoujh99@qq.com
+// @contact.name fmy
+// @contact.email 1390167880@qq.com
 // @license.name Apache 2.0
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 func main() {

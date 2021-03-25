@@ -85,7 +85,8 @@ func ChannelQueryBlockinfo() (BciResp *fab.BlockchainInfoResponse) {
 	// to query various info on specified channel. An application that requires interaction
 	// with multiple channels should create a separate instance of the ledger client
 	// for each channel. Ledger client supports specific queries only.
-
+	// ctx := SDK.ChannelContext(ChannelName, fabsdk.WithOrg(Org), fabsdk.WithUser(User))
+	// cli, err := channel.New(ctx)
 	c, err := ledger.New(SDK.ChannelContext(ChannelName, fabsdk.WithOrg(Org), fabsdk.WithUser(User)))
 	if err != nil {
 		fmt.Println("failed to create client")
@@ -94,11 +95,11 @@ func ChannelQueryBlockinfo() (BciResp *fab.BlockchainInfoResponse) {
 	bci, err := c.QueryInfo()
 	if err != nil {
 		fmt.Printf("failed to query for blockchain info: %s\n", err)
-		return bci //, err
+		//, err
 	}
-
-	if bci != nil {
-		fmt.Println("Retrieved ledger info")
-	}
-	return bci //, nil
+	return bci
+	// if bci != nil {
+	// 	fmt.Println("Retrieved ledger info")
+	// }
+	// return bci , nil
 }
