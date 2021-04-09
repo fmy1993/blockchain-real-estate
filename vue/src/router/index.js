@@ -34,7 +34,7 @@ export const constantRoutes = [{
   path: '/login',
   component: () => import('@/views/login/index'),
   hidden: true
-},
+},//先加载第一个
 
 {
   path: '/404',
@@ -43,16 +43,18 @@ export const constantRoutes = [{
 },
 
 {
-  path: '/',
+  path: '/',//在login的index里写了跳转到/，就直接被第三个捕获,再跳转到realstate
   component: Layout,
   redirect: '/realestate',
+  //redirect: '/addCrop',
   children: [{
     path: 'realestate',
     name: 'Realestate',
-    component: () => import('@/views/realestate/list/index'),
+    //component: () => import('@/views/realestate/list/index'),调用的list.index
+    component: () => import('@/views/crop/add/index'),
     meta: {
-      title: '房产信息',
-      icon: 'realestate'
+      title: '农产品溯源',
+      icon: 'addRealestate'
     }
   }]
 }
@@ -63,6 +65,22 @@ export const constantRoutes = [{
  * the routes that need to be dynamically loaded based on user roles
  */
 export const asyncRoutes = [
+  {
+    path: '/addCrop',
+    component: Layout,
+    meta: {
+      roles: ['editor']
+    },
+    children: [{
+      path: '/addCrop',
+      name: 'AddCrop',
+      component: () => import('@/views/crop/add/index'),
+      meta: {
+        title: '数据上链',
+        icon: 'sellingMe'
+      }
+    }]
+  },
   {
     path: '/selling',
     component: Layout,
@@ -143,11 +161,14 @@ export const asyncRoutes = [
     }
     ]
   },
+
+
   {
     path: '/addRealestate',
     component: Layout,
     meta: {
       roles: ['admin']
+
     },
     children: [{
       path: '/addRealestate',

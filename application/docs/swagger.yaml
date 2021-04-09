@@ -143,6 +143,20 @@ info:
   title: 基于区块链技术的农产品溯源系统api文档
   version: "1.0"
 paths:
+  /api/v1/addCrop:
+    post:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/app.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/app.Response'
+      summary: test post
   /api/v1/createDonating:
     post:
       parameters:

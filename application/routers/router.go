@@ -26,7 +26,7 @@ func InitRouter() *gin.Engine {
 	//swagger文档
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	apiV1 := r.Group("/api/v1")
-	{
+	{ //这里已经把方法按类拆分开了
 		apiV1.GET("/hello", v1.Hello)
 		apiV1.GET("/getBlockInfo", v1.GetBlockInfo)
 		apiV1.POST("/queryAccountList", v1.QueryAccountList)
@@ -41,9 +41,12 @@ func InitRouter() *gin.Engine {
 		apiV1.POST("/queryDonatingList", v1.QueryDonatingList)
 		apiV1.POST("/queryDonatingListByGrantee", v1.QueryDonatingListByGrantee)
 		apiV1.POST("/updateDonating", v1.UpdateDonating)
+		apiV1.POST("/addCrop", v1.AddCrop)
 	}
 	// 静态文件路由
+	//r.StaticFS("/web", http.Dir("."))
 	r.StaticFS("/web", http.Dir("./dist/"))
+	//r.StaticFS("/web", http.Dir("./dist-old/"))
 	return r
 }
 

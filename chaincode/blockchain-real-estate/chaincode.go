@@ -2,12 +2,13 @@ package main
 
 import (
 	"fmt"
+	"time"
+
 	"github.com/fmy1993/blockchain-real-estate/chaincode/blockchain-real-estate/lib"
 	"github.com/fmy1993/blockchain-real-estate/chaincode/blockchain-real-estate/routers"
 	"github.com/fmy1993/blockchain-real-estate/chaincode/blockchain-real-estate/utils"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	pb "github.com/hyperledger/fabric/protos/peer"
-	"time"
 )
 
 type BlockChainRealEstate struct {
@@ -75,6 +76,8 @@ func (t *BlockChainRealEstate) Invoke(stub shim.ChaincodeStubInterface) pb.Respo
 		return routers.QueryDonatingListByGrantee(stub, args)
 	case "updateDonating":
 		return routers.UpdateDonating(stub, args)
+	case "createCrop":
+		return routers.CreateCrop(stub, args)
 	default:
 		return shim.Error(fmt.Sprintf("没有该功能: %s", funcName))
 	}

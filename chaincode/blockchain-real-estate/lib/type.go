@@ -6,6 +6,11 @@
  */
 package lib
 
+type Crop struct {
+	Id       string `json:"id"`
+	HashInfo string `json:"hashinfo"`
+}
+
 //账户，虚拟管理员和若干业主账号
 type Account struct {
 	AccountId string  `json:"accountId"` //账号ID
