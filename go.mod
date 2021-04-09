@@ -77,6 +77,6 @@ replace github.com/coreos/bbolt v1.3.5 => go.etcd.io/bbolt v1.3.5
 
 replace go.etcd.io/bbolt v1.3.5 => github.com/coreos/bbolt v1.3.5
 
-replace blockchain-real-estate/github.com/togettoyou/blockchain-real-estate v0.0.0-20210225030431-330c0099e6b4 => blockchain-real-estate/github.com/fmy1993/blockchain-real-estate v0.1.1
+replace blockchain-real-estate/github.com/togettoyou/blockchain-real-estate v0.0.0-20210225030431-330c0099e6b4 => blockchain-real-estate/github.com/fmy1993/blockchain-real-estate v0.1.2
 
 replace google.golang.org/grpc v1.36.0 => google.golang.org/grpc v1.26.0

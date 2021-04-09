@@ -1202,4 +1202,4 @@ mvdan.cc/unparam/check
 ## explicit
 sigs.k8s.io/yaml
 # go.etcd.io/bbolt v1.3.5 => github.com/coreos/bbolt v1.3.5
-# blockchain-real-estate/github.com/togettoyou/blockchain-real-estate v0.0.0-20210225030431-330c0099e6b4 => blockchain-real-estate/github.com/fmy1993/blockchain-real-estate v0.1.1
+# blockchain-real-estate/github.com/togettoyou/blockchain-real-estate v0.0.0-20210225030431-330c0099e6b4 => blockchain-real-estate/github.com/fmy1993/blockchain-real-estate v0.1.2
