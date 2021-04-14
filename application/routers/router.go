@@ -29,6 +29,9 @@ func InitRouter() *gin.Engine {
 	{ //这里已经把方法按类拆分开了
 		apiV1.GET("/hello", v1.Hello)
 		apiV1.GET("/getBlockInfo", v1.GetBlockInfo)
+		apiV1.GET("/getBlockInfoByBlockHeight", v1.GetBlockInfoByBlockHeight)
+		apiV1.GET("/getMaxDataBlockHeight", v1.GetMaxDataBlockHeight)
+		apiV1.GET("/checkDataBlockHeight", v1.CheckDataBlockHeight)
 		apiV1.POST("/queryAccountList", v1.QueryAccountList)
 		apiV1.POST("/createRealEstate", v1.CreateRealEstate)
 		apiV1.POST("/queryRealEstateList", v1.QueryRealEstateList)

@@ -9,6 +9,7 @@ package blockchain
 import (
 	"fmt"
 
+	"github.com/hyperledger/fabric-protos-go/common"
 	"github.com/hyperledger/fabric-sdk-go/pkg/client/channel"
 	"github.com/hyperledger/fabric-sdk-go/pkg/client/ledger"
 	"github.com/hyperledger/fabric-sdk-go/pkg/common/providers/fab"
@@ -32,7 +33,7 @@ func Init() {
 	// 通过配置文件初始化SDK
 	SDK, err = fabsdk.New(config.FromFile(ConfigPath))
 	if err != nil {
-		panic(err)
+		panic(err) //在这里发生异常就直接中断，因为是严重的异常
 	}
 }
 
@@ -51,9 +52,9 @@ func ChannelExecute(fcn string, args [][]byte) (channel.Response, error) {
 		Args:        args,
 	}, channel.WithTargetEndpoints("peer0.org1.blockchainrealestate.com"))
 	if err != nil {
-		return channel.Response{}, err
+		return channel.Response{}, err //出错就没有必要返回Response信息了，只需要返回err信息
 	}
-	//返回链码执行后的结果
+	//返回链码执行后的结果,存在response的payload中
 	return resp, nil
 }
 
@@ -79,7 +80,7 @@ func ChannelQuery(fcn string, args [][]byte) (channel.Response, error) {
 }
 
 //查询账本信息
-func ChannelQueryBlockinfo() (BciResp *fab.BlockchainInfoResponse) {
+func ChannelQueryBlockinfo() (BciResp *fab.BlockchainInfoResponse, err error) {
 	// 	func New(channelProvider context.ChannelProvider, opts ...ClientOption) (*Client, error)
 	// New returns a ledger client instance. A ledger client instance provides a handler
 	// to query various info on specified channel. An application that requires interaction
@@ -95,11 +96,27 @@ func ChannelQueryBlockinfo() (BciResp *fab.BlockchainInfoResponse) {
 	bci, err := c.QueryInfo()
 	if err != nil {
 		fmt.Printf("failed to query for blockchain info: %s\n", err)
-		//, err
 	}
-	return bci
-	// if bci != nil {
-	// 	fmt.Println("Retrieved ledger info")
-	// }
-	// return bci , nil
+	return bci, nil
+}
+
+func QueryBlockinfoByBlockHeight(BlockHeight uint64) (BlockResp *common.Block, err error) {
+	// 	func New(channelProvider context.ChannelProvider, opts ...ClientOption) (*Client, error)
+	// New returns a ledger client instance. A ledger client instance provides a handler
+	// to query various info on specified channel. An application that requires interaction
+	// with multiple channels should create a separate instance of the ledger client
+	// for each channel. Ledger client supports specific queries only.
+	// ctx := SDK.ChannelContext(ChannelName, fabsdk.WithOrg(Org), fabsdk.WithUser(User))
+	// cli, err := channel.New(ctx)
+	c, err := ledger.New(SDK.ChannelContext(ChannelName, fabsdk.WithOrg(Org), fabsdk.WithUser(User)))
+	if err != nil {
+		fmt.Println("failed to create client")
+	}
+	//BlockHeightInt64 := uint64(BlockHeight)
+
+	block, err := c.QueryBlock(BlockHeight)
+	if err != nil {
+		fmt.Printf("failed to query for blockchain info: %s\n", err)
+	}
+	return block, nil
 }

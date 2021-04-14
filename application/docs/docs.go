@@ -37,6 +37,48 @@ var doc = `{
                     "application/json"
                 ],
                 "summary": "test post",
+                "parameters": [
+                    {
+                        "description": "crop",
+                        "name": "Crop",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/v1.Crop"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/app.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/app.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/checkDataBlockHeight": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "检查查询的区块高度是否符合要求",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "区块高度",
+                        "name": "datablockheight",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -191,6 +233,59 @@ var doc = `{
                     "application/json"
                 ],
                 "summary": "输出blockInfo",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/app.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/app.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/getBlockInfoByBlockHeight": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "输出blockInfo",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "区块高度",
+                        "name": "height",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/app.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/app.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/getMaxDataBlockHeight": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "输出最大数据区块高度",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -528,6 +623,21 @@ var doc = `{
                 }
             }
         },
+        "v1.Crop": {
+            "type": "object",
+            "properties": {
+                "datatype": {
+                    "description": "add column here",
+                    "type": "string"
+                },
+                "hashinfo": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                }
+            }
+        },
         "v1.DonatingListQueryByGranteeRequestBody": {
             "type": "object",
             "properties": {
@@ -708,7 +818,7 @@ var SwaggerInfo = swaggerInfo{
 	BasePath:    "",
 	Schemes:     []string{},
 	Title:       "基于区块链技术的农产品溯源系统api文档",
-	Description: "基于区块链技术的房地产交易系统api文档",
+	Description: "基于区块链技术的农产品溯源系统api文档",
 }
 
 type s struct{}

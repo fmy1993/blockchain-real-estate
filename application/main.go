@@ -26,7 +26,7 @@ func init() {
 
 // @title 基于区块链技术的农产品溯源系统api文档
 // @version 1.0
-// @description 基于区块链技术的房地产交易系统api文档
+// @description 基于区块链技术的农产品溯源系统api文档
 // @contact.name fmy
 // @contact.email 1390167880@qq.com
 // @license.name Apache 2.0

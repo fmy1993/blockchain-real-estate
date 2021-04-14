@@ -21,7 +21,11 @@ import (
 // @Router /api/v1/hello [get]
 func Hello(c *gin.Context) {
 	appG := app.Gin{C: c}
-	BciResp := bc.ChannelQueryBlockinfo()
+	BciResp, err := bc.ChannelQueryBlockinfo()
+	if err != nil {
+		appG.Response(http.StatusInternalServerError, "失败", err.Error())
+		return
+	}
 	//appG.Response(http.StatusOK, "成功", bci.BlockchainInfo.GetCurrentBlockHash())
 	appG.Response(http.StatusOK, "成功", map[string]interface{}{
 		"当前区块hash值": BciResp.BCI.CurrentBlockHash,

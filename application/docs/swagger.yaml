@@ -20,6 +20,16 @@ definitions:
           $ref: '#/definitions/v1.AccountIdBody'
         type: array
     type: object
+  v1.Crop:
+    properties:
+      datatype:
+        description: add column here
+        type: string
+      hashinfo:
+        type: string
+      id:
+        type: string
+    type: object
   v1.DonatingListQueryByGranteeRequestBody:
     properties:
       grantee:
@@ -136,7 +146,7 @@ info:
   contact:
     email: 1390167880@qq.com
     name: fmy
-  description: 基于区块链技术的房地产交易系统api文档
+  description: 基于区块链技术的农产品溯源系统api文档
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
@@ -145,6 +155,13 @@ info:
 paths:
   /api/v1/addCrop:
     post:
+      parameters:
+      - description: crop
+        in: body
+        name: Crop
+        required: true
+        schema:
+          $ref: '#/definitions/v1.Crop'
       produces:
       - application/json
       responses:
@@ -157,6 +174,26 @@ paths:
           schema:
             $ref: '#/definitions/app.Response'
       summary: test post
+  /api/v1/checkDataBlockHeight:
+    get:
+      parameters:
+      - description: 区块高度
+        in: query
+        name: datablockheight
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/app.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/app.Response'
+      summary: 检查查询的区块高度是否符合要求
   /api/v1/createDonating:
     post:
       parameters:
@@ -255,6 +292,40 @@ paths:
           schema:
             $ref: '#/definitions/app.Response'
       summary: 输出blockInfo
+  /api/v1/getBlockInfoByBlockHeight:
+    get:
+      parameters:
+      - description: 区块高度
+        in: query
+        name: height
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/app.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/app.Response'
+      summary: 输出blockInfo
+  /api/v1/getMaxDataBlockHeight:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/app.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/app.Response'
+      summary: 输出最大数据区块高度
   /api/v1/hello:
     get:
       produces:

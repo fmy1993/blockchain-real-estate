@@ -10,16 +10,17 @@ import (
 	pb "github.com/hyperledger/fabric/protos/peer"
 )
 
-//新建房地产(管理员)
+//增加数据				参数自动 [][]byte --> []string   pb.Response is a struct
 func CreateCrop(stub shim.ChaincodeStubInterface, args []string) pb.Response {
 	// 验证参数
-	if len(args) != 2 {
+	if len(args) != 3 { //2 { 增加参数
 		return shim.Error("参数个数不满足")
 	}
-	id := args[0] //accountId用于验证是否为管理员
-	hashinfo := args[1]
+	datatype := args[0]
+	id := args[1]
+	hashinfo := args[2]
 
-	if id == "" || hashinfo == "" {
+	if id == "" || hashinfo == "" || datatype == "" {
 		return shim.Error("参数存在空值")
 	}
 
@@ -31,12 +32,13 @@ func CreateCrop(stub shim.ChaincodeStubInterface, args []string) pb.Response {
 	// 	formattedTotalArea = val
 	// }
 
-	//判断业主是否存在
+	//判断数据是否存在
 	// resultsProprietor, err := utils.GetStateByPartialCompositeKeys(stub, lib.AccountKey, []string{proprietor})
 	// if err != nil || len(resultsProprietor) != 1 {
 	// 	return shim.Error(fmt.Sprintf("业主proprietor信息验证失败%s", err))
 	// }
 	Crop := &lib.Crop{
+		DataType: datatype,
 		Id:       id,
 		HashInfo: hashinfo,
 	}
@@ -50,5 +52,5 @@ func CreateCrop(stub shim.ChaincodeStubInterface, args []string) pb.Response {
 		return shim.Error(fmt.Sprintf("序列化成功创建的信息出错: %s", err))
 	}
 	// 成功返回
-	return shim.Success(CropByte)
+	return shim.Success(CropByte) //返回的数据会存在这个结构体的payload中
 }

@@ -7,6 +7,7 @@
 package lib
 
 type Crop struct {
+	DataType string `json:"datatype"` // add column here
 	Id       string `json:"id"`
 	HashInfo string `json:"hashinfo"`
 }
