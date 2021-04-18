@@ -36,7 +36,7 @@ var doc = `{
                 "produces": [
                     "application/json"
                 ],
-                "summary": "增加上链数据,cropid=\"datatype\"+\"-\"+\"id\" eg:\"test-711\"",
+                "summary": "增加上链数据",
                 "parameters": [
                     {
                         "description": "crop",
@@ -362,7 +362,7 @@ var doc = `{
                 "produces": [
                     "application/json"
                 ],
-                "summary": "查询上链信息",
+                "summary": "查询上链信息,cropid=\"datatype\"+\"-\"+\"id\" eg:\"test-711\"",
                 "parameters": [
                     {
                         "description": "crop",

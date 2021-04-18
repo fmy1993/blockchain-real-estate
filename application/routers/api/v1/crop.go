@@ -27,7 +27,7 @@ type CropRequestBody struct {
 	Args []CropIdBody `json:"args"`
 }
 
-// @Summary 增加上链数据,cropid="datatype"+"-"+"id" eg:"test-711"
+// @Summary 增加上链数据
 // @Param Crop body Crop true "crop"
 // @Produce  json
 // @Success 200 {object} app.Response
@@ -79,7 +79,7 @@ func AddCrop(c *gin.Context) {
 
 }
 
-// @Summary 查询上链信息
+// @Summary 查询上链信息,cropid="datatype"+"-"+"id" eg:"test-711"
 // @Param crop body CropRequestBody true "crop"
 // @Produce  json
 // @Success 200 {object} app.Response
