@@ -9,6 +9,8 @@ services:
       - CORE_CHAINCODE_LOGGING_LEVEL=INFO
       - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/peer/msp # msp证书（节点证书）
       - CORE_LEDGER_STATE_STATEDATABASE=goleveldb # 状态数据库的存储引擎（or CouchDB）
-      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=deploy_default # cc与peer节点使用同一个网络
-    working_dir: /opt/gopath/src/github.com/hyperledger/fabric
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=deploy_default # cc与peer节点使用同一个网络 ？cc=chaincode?
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric # 这个就是进入容器的默认路径
     command: peer node start
+
+    #环境变量的作用之一就是告诉系统应用路径

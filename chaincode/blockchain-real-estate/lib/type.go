@@ -92,6 +92,7 @@ type DonatingGrantee struct {
 }
 
 const (
+	CropKey            = "crop-key"
 	AccountKey         = "account-key"
 	RealEstateKey      = "real-estate-key"
 	SellingKey         = "selling-key"

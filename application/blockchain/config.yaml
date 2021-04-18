@@ -104,7 +104,7 @@ orderers:
       fail-fast: false
       allow-insecure: true # 非tls连接
 
-# 指定peer
+# 指定peer,在这里指定了具体哪个节点的sdk与区块链网络进行连接
 peers:
   peer0.org1.blockchainrealestate.com:
     url: 127.0.0.1:27051

@@ -42,8 +42,8 @@ func CreateCrop(stub shim.ChaincodeStubInterface, args []string) pb.Response {
 		Id:       id,
 		HashInfo: hashinfo,
 	}
-	// 写入账本
-	if err := utils.WriteLedger(Crop, stub, lib.RealEstateKey, []string{Crop.Id, Crop.HashInfo}); err != nil {
+	// 写入账本   // []string{Crop.Id, Crop.HashInfo} 以两个字段做主键存入按一个字段查询查不到 ，复合主键的类型也必须对上
+	if err := utils.WriteLedger(Crop, stub, lib.CropKey, []string{Crop.DataType + "-" + Crop.Id}); err != nil {
 		return shim.Error(fmt.Sprintf("%s", err))
 	}
 	//将成功创建的信息返回
@@ -53,4 +53,28 @@ func CreateCrop(stub shim.ChaincodeStubInterface, args []string) pb.Response {
 	}
 	// 成功返回
 	return shim.Success(CropByte) //返回的数据会存在这个结构体的payload中
+}
+
+//查询上链数据列表
+func QueryCrop(stub shim.ChaincodeStubInterface, args []string) pb.Response {
+	var cropList []lib.Crop // crop数组
+	results, err := utils.GetStateByPartialCompositeKeys(stub, lib.CropKey, args)
+	if err != nil {
+		return shim.Error(fmt.Sprintf("%s", err))
+	}
+	for _, v := range results {
+		if v != nil {
+			var crop lib.Crop // 声明了结构体
+			err := json.Unmarshal(v, &crop)
+			if err != nil {
+				return shim.Error(fmt.Sprintf("QueryCropList-反序列化出错: %s", err))
+			}
+			cropList = append(cropList, crop)
+		}
+	}
+	cropListByte, err := json.Marshal(cropList)
+	if err != nil {
+		return shim.Error(fmt.Sprintf("QueryCropList-序列化出错: %s", err))
+	}
+	return shim.Success(cropListByte)
 }

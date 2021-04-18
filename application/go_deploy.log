@@ -1,0 +1,47 @@
+ [fabsdk/fab] 2021/04/18 11:47:26 UTC - fab.detectDeprecatedNetworkConfig -> WARN Getting orderers from endpoint config channels.orderer is deprecated, use entity matchers to override orderer configuration
+ [fabsdk/fab] 2021/04/18 11:47:26 UTC - fab.detectDeprecatedNetworkConfig -> WARN visit https://github.com/hyperledger/fabric-sdk-go/blob/master/test/fixtures/config/overrides/local_entity_matchers.yaml for samples
+[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+ - using env:	export GIN_MODE=release
+ - using code:	gin.SetMode(gin.ReleaseMode)
+
+2021/04/18 19:47:26 定时任务已开启
+[GIN-debug] GET    /swagger/*any             --> github.com/swaggo/gin-swagger.CustomWrapHandler.func1 (4 handlers)
+[GIN-debug] GET    /api/v1/hello             --> github.com/fmy1993/blockchain-real-estate/application/routers/api/v1.Hello (4 handlers)
+[GIN-debug] GET    /api/v1/getBlockInfo      --> github.com/fmy1993/blockchain-real-estate/application/routers/api/v1.GetBlockInfo (4 handlers)
+[GIN-debug] GET    /api/v1/getBlockInfoByBlockHeight --> github.com/fmy1993/blockchain-real-estate/application/routers/api/v1.GetBlockInfoByBlockHeight (4 handlers)
+[GIN-debug] GET    /api/v1/getMaxDataBlockHeight --> github.com/fmy1993/blockchain-real-estate/application/routers/api/v1.GetMaxDataBlockHeight (4 handlers)
+[GIN-debug] GET    /api/v1/checkDataBlockHeight --> github.com/fmy1993/blockchain-real-estate/application/routers/api/v1.CheckDataBlockHeight (4 handlers)
+[GIN-debug] POST   /api/v1/queryCrop         --> github.com/fmy1993/blockchain-real-estate/application/routers/api/v1.QueryCrop (4 handlers)
+[GIN-debug] POST   /api/v1/queryAccountList  --> github.com/fmy1993/blockchain-real-estate/application/routers/api/v1.QueryAccountList (4 handlers)
+[GIN-debug] POST   /api/v1/createRealEstate  --> github.com/fmy1993/blockchain-real-estate/application/routers/api/v1.CreateRealEstate (4 handlers)
+[GIN-debug] POST   /api/v1/queryRealEstateList --> github.com/fmy1993/blockchain-real-estate/application/routers/api/v1.QueryRealEstateList (4 handlers)
+[GIN-debug] POST   /api/v1/createSelling     --> github.com/fmy1993/blockchain-real-estate/application/routers/api/v1.CreateSelling (4 handlers)
+[GIN-debug] POST   /api/v1/createSellingByBuy --> github.com/fmy1993/blockchain-real-estate/application/routers/api/v1.CreateSellingByBuy (4 handlers)
+[GIN-debug] POST   /api/v1/querySellingList  --> github.com/fmy1993/blockchain-real-estate/application/routers/api/v1.QuerySellingList (4 handlers)
+[GIN-debug] POST   /api/v1/querySellingListByBuyer --> github.com/fmy1993/blockchain-real-estate/application/routers/api/v1.QuerySellingListByBuyer (4 handlers)
+[GIN-debug] POST   /api/v1/updateSelling     --> github.com/fmy1993/blockchain-real-estate/application/routers/api/v1.UpdateSelling (4 handlers)
+[GIN-debug] POST   /api/v1/createDonating    --> github.com/fmy1993/blockchain-real-estate/application/routers/api/v1.CreateDonating (4 handlers)
+[GIN-debug] POST   /api/v1/queryDonatingList --> github.com/fmy1993/blockchain-real-estate/application/routers/api/v1.QueryDonatingList (4 handlers)
+[GIN-debug] POST   /api/v1/queryDonatingListByGrantee --> github.com/fmy1993/blockchain-real-estate/application/routers/api/v1.QueryDonatingListByGrantee (4 handlers)
+[GIN-debug] POST   /api/v1/updateDonating    --> github.com/fmy1993/blockchain-real-estate/application/routers/api/v1.UpdateDonating (4 handlers)
+[GIN-debug] POST   /api/v1/addCrop           --> github.com/fmy1993/blockchain-real-estate/application/routers/api/v1.AddCrop (4 handlers)
+[GIN-debug] GET    /web/*filepath            --> github.com/gin-gonic/gin.(*RouterGroup).createStaticHandler.func1 (4 handlers)
+[GIN-debug] HEAD   /web/*filepath            --> github.com/gin-gonic/gin.(*RouterGroup).createStaticHandler.func1 (4 handlers)
+2021/04/18 19:47:26 [info] start http server listening :8000
+[GIN] 2021/04/18 - 19:47:44 | 304 |     338.252µs |             ::1 | GET      "/web/"
+[GIN] 2021/04/18 - 19:47:45 | 200 |   62.059327ms |             ::1 | GET      "/api/v1/getBlockInfo"
+[GIN] 2021/04/18 - 19:47:45 | 200 |    6.660729ms |             ::1 | GET      "/web/static/js/manifest.842e7bb667bd8e05328c.js.map"
+[GIN] 2021/04/18 - 19:47:45 | 200 |     318.062µs |             ::1 | GET      "/web/static/js/app.e4f4b996eb8f6ed7a741.js.map"
+[GIN] 2021/04/18 - 19:47:45 | 200 |   19.304746ms |             ::1 | GET      "/web/static/js/vendor.d39211774cfeaa74d26b.js.map"
+[GIN] 2021/04/18 - 19:47:45 | 200 |    1.291408ms |             ::1 | GET      "/web/static/css/app.da207cf7f2008a443f629eff46593bab.css.map"
+[GIN] 2021/04/18 - 19:47:46 | 200 |     334.994µs |       127.0.0.1 | GET      "/swagger/index.html"
+[GIN] 2021/04/18 - 19:47:46 | 200 |     258.674µs |       127.0.0.1 | GET      "/swagger/swagger-ui.css"
+[GIN] 2021/04/18 - 19:47:46 | 200 |     547.653µs |       127.0.0.1 | GET      "/swagger/swagger-ui-bundle.js"
+[GIN] 2021/04/18 - 19:47:46 | 200 |     622.516µs |       127.0.0.1 | GET      "/swagger/swagger-ui-standalone-preset.js"
+[GIN] 2021/04/18 - 19:47:47 | 200 |     1.03161ms |       127.0.0.1 | GET      "/swagger/doc.json"
+[GIN] 2021/04/18 - 19:47:47 | 200 |       170.6µs |       127.0.0.1 | GET      "/swagger/favicon-32x32.png"
+[GIN] 2021/04/18 - 19:48:33 | 200 |    9.295574ms |       127.0.0.1 | POST     "/api/v1/queryCrop"
+[GIN] 2021/04/18 - 19:49:05 | 200 |    9.881222ms |       127.0.0.1 | POST     "/api/v1/queryCrop"
+[GIN] 2021/04/18 - 19:49:19 | 200 |    8.247901ms |       127.0.0.1 | POST     "/api/v1/queryCrop"
+[GIN] 2021/04/18 - 19:50:46 | 200 |    9.752784ms |       127.0.0.1 | POST     "/api/v1/queryCrop"
+[GIN] 2021/04/18 - 19:52:03 | 200 |    9.663547ms |       127.0.0.1 | POST     "/api/v1/queryCrop"

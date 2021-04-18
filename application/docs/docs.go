@@ -36,7 +36,7 @@ var doc = `{
                 "produces": [
                     "application/json"
                 ],
-                "summary": "test post",
+                "summary": "增加上链数据,cropid=\"datatype\"+\"-\"+\"id\" eg:\"test-711\"",
                 "parameters": [
                     {
                         "description": "crop",
@@ -357,6 +357,39 @@ var doc = `{
                 }
             }
         },
+        "/api/v1/queryCrop": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "查询上链信息",
+                "parameters": [
+                    {
+                        "description": "crop",
+                        "name": "crop",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/v1.CropRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/app.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/app.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/queryDonatingList": {
             "post": {
                 "produces": [
@@ -635,6 +668,25 @@ var doc = `{
                 },
                 "id": {
                     "type": "string"
+                }
+            }
+        },
+        "v1.CropIdBody": {
+            "type": "object",
+            "properties": {
+                "cropid": {
+                    "type": "string"
+                }
+            }
+        },
+        "v1.CropRequestBody": {
+            "type": "object",
+            "properties": {
+                "args": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/v1.CropIdBody"
+                    }
                 }
             }
         },

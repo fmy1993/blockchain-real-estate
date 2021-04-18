@@ -1,6 +1,8 @@
 package v1
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"net/http"
 
@@ -15,7 +17,17 @@ type Crop struct {
 	HashInfo string `json:"hashinfo"`
 }
 
-// @Summary test post
+type CropIdBody struct {
+	CropId string `json:"cropid"`
+	//DataType string `json:"datatype"`
+}
+
+//分别定义数组和 数组中的 k,v可以直接绑定jsonarray
+type CropRequestBody struct {
+	Args []CropIdBody `json:"args"`
+}
+
+// @Summary 增加上链数据,cropid="datatype"+"-"+"id" eg:"test-711"
 // @Param Crop body Crop true "crop"
 // @Produce  json
 // @Success 200 {object} app.Response
@@ -65,4 +77,37 @@ func AddCrop(c *gin.Context) {
 	blockInfo.PreviousBlockHash = blockResp.Header.PreviousHash
 	appG.Response(http.StatusOK, "成功", blockInfo)
 
+}
+
+// @Summary 查询上链信息
+// @Param crop body CropRequestBody true "crop"
+// @Produce  json
+// @Success 200 {object} app.Response
+// @Failure 500 {object} app.Response
+// @Router /api/v1/queryCrop [post]
+func QueryCrop(c *gin.Context) {
+	appG := app.Gin{C: c}
+	body := new(CropRequestBody) //CropRequestBody
+	//解析Body参数
+	if err := c.ShouldBind(body); err != nil {
+		appG.Response(http.StatusBadRequest, "失败", fmt.Sprintf("参数出错%s", err.Error()))
+		return
+	}
+	var bodyBytes [][]byte
+	for _, val := range body.Args {
+		bodyBytes = append(bodyBytes, []byte(val.CropId))
+	}
+	//调用智能合约,这里必须要修改
+	resp, err := bc.ChannelQuery("queryCrop", bodyBytes)
+	if err != nil {
+		appG.Response(http.StatusInternalServerError, "失败", err.Error())
+		return
+	}
+	// 反序列化json
+	var data []map[string]interface{}
+	if err = json.Unmarshal(bytes.NewBuffer(resp.Payload).Bytes(), &data); err != nil {
+		appG.Response(http.StatusInternalServerError, "失败", err.Error())
+		return
+	}
+	appG.Response(http.StatusOK, "成功", data)
 }

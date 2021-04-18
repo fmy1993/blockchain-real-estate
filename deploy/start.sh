@@ -6,15 +6,15 @@
 
 # 一、环境清理
 echo "一、环境清理"
-mkdir -p config
+mkdir -p config # -p是保证可以一次性创建  a/b 这样形式的目录，如果不存在就创建，存在也不报错
 mkdir -p crypto-config
-rm -fr config/*
-rm -fr crypto-config/*
+rm -fr config/* # 清理文件夹下的其他材料,主要是通道的材料
+rm -fr crypto-config/* # docker 宿主文件删除了挂载的文件会删除吗？ 要持久化的话主机路径应该不能删除，删除了volume也会失效的
 echo "清理完毕"
 
 # 二、生成证书和起始区块信息
 echo "二、生成证书和起始区块信息"
-cryptogen generate --config=./crypto-config.yaml
+cryptogen generate --config=./crypto-config.yaml #默认都是在配置文件当前路径生成文件夹
 configtxgen -profile OneOrgOrdererGenesis -outputBlock ./config/genesis.block
 
 # 三、启动区块链网络
@@ -29,11 +29,11 @@ echo "三、生成通道的TX文件(这个动作会创建一个创世交易，�
 configtxgen -profile TwoOrgChannel -outputCreateChannelTx ./config/assetschannel.tx -channelID assetschannel
 
 # 五、在区块链上按照刚刚生成的TX文件去创建通道
-# 该操作和上面操作不一样的是，这个操作会写入区块链
-echo "五、在区块链上按照刚刚生成的TX文件去创建通道"
+# 该操作和上面操作不一样的是，这个操作会写入区块链，必须进入cli容器才能运行这个命令，cli命令才有这个功能
+echo "五、在区块链上按照刚刚生成的TX文件去创建通道" #/etc/hyperledger/config 这个路径分别映射了order节点容器以及cli容器的路径
 docker exec cli peer channel create -o orderer.blockchainrealestate.com:7050 -c assetschannel -f /etc/hyperledger/config/assetschannel.tx
 
-# 六、让节点去加入到通道
+# 六、让节点去加入到通道    分布式网络里一定是有多个节点的
 echo "六、让节点去加入到通道"
 docker exec cli peer channel join -b assetschannel.block
 
@@ -49,9 +49,16 @@ docker exec cli peer chaincode install -n blockchain-real-estate -v 1.0.0 -l gol
 #-n 对应前文安装链码的名字 其实就是composer network start bna名字
 #-v 为版本号，相当于composer network start bna名字@版本号
 #-C 是通道，在fabric的世界，一个通道就是一条不同的链，composer并没有很多提现这点，composer提现channel也就在于多组织时候的数据隔离和沟通使用
+# 所谓多条链也就是多条通道
 #-c 为传参，传入init参数
+# 如果需要升级链码，只需要 替换后命令后面的版本号即可，eg:  
+# docker exec cli peer chaincode install -n blockchain-real-estate -v 1.0.1 -l golang -p github.com/fmy1993/blockchain-real-estate/chaincode/blockchain-real-estate
 echo "八、实例化链码"
 docker exec cli peer chaincode instantiate -o orderer.blockchainrealestate.com:7050 -C assetschannel -n blockchain-real-estate -l golang -v 1.0.0 -c '{"Args":["init"]}'
+# 使用upgrade命令按照版本号，
+# docker exec cli peer chaincode upgrade -o orderer.blockchainrealestate.com:7050 -C assetschannel -n blockchain-real-estate -l golang -v 1.0.1 -c '{"Args":["init"]}'
+
 
 # 进行链码交互，验证链码是否正确安装及区块链网络能否正常工作
 # docker exec cli peer chaincode invoke -C assetschannel -n blockchain-real-estate -c '{"Args":[""]}'
+# docker exec cli peer chaincode invoke -C assetschannel -n blockchain-real-estate -c '{"Args":["queryAccountList"]}'

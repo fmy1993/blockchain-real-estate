@@ -32,6 +32,7 @@ func InitRouter() *gin.Engine {
 		apiV1.GET("/getBlockInfoByBlockHeight", v1.GetBlockInfoByBlockHeight)
 		apiV1.GET("/getMaxDataBlockHeight", v1.GetMaxDataBlockHeight)
 		apiV1.GET("/checkDataBlockHeight", v1.CheckDataBlockHeight)
+		apiV1.POST("/queryCrop", v1.QueryCrop)
 		apiV1.POST("/queryAccountList", v1.QueryAccountList)
 		apiV1.POST("/createRealEstate", v1.CreateRealEstate)
 		apiV1.POST("/queryRealEstateList", v1.QueryRealEstateList)

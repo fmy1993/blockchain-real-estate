@@ -30,6 +30,18 @@ definitions:
       id:
         type: string
     type: object
+  v1.CropIdBody:
+    properties:
+      cropid:
+        type: string
+    type: object
+  v1.CropRequestBody:
+    properties:
+      args:
+        items:
+          $ref: '#/definitions/v1.CropIdBody'
+        type: array
+    type: object
   v1.DonatingListQueryByGranteeRequestBody:
     properties:
       grantee:
@@ -173,7 +185,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/app.Response'
-      summary: test post
+      summary: 增加上链数据,cropid="datatype"+"-"+"id" eg:"test-711"
   /api/v1/checkDataBlockHeight:
     get:
       parameters:
@@ -361,6 +373,27 @@ paths:
           schema:
             $ref: '#/definitions/app.Response'
       summary: 获取账户信息
+  /api/v1/queryCrop:
+    post:
+      parameters:
+      - description: crop
+        in: body
+        name: crop
+        required: true
+        schema:
+          $ref: '#/definitions/v1.CropRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/app.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/app.Response'
+      summary: 查询上链信息
   /api/v1/queryDonatingList:
     post:
       parameters:
