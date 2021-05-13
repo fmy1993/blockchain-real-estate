@@ -111,3 +111,39 @@ func QueryCrop(c *gin.Context) {
 	}
 	appG.Response(http.StatusOK, "成功", data)
 }
+
+// @Summary 增加上链数据
+// @Param Crop body Crop true "crop"
+// @Produce  json
+// @Success 200 {object} app.Response
+// @Failure 500 {object} app.Response
+// @Router /api/v1/updateCrop [post]
+func UpdateCrop(c *gin.Context) {
+	appG := app.Gin{C: c}
+	cropBody := new(Crop) //CropRequestBody
+	//解析Body参数
+	if err := c.ShouldBind(&cropBody); err != nil {
+		appG.Response(http.StatusBadRequest, "失败", fmt.Sprintf("参数出错%s", err.Error()))
+		return
+	}
+	var bodyBytes [][]byte
+
+	//bodyBytes = append(bodyBytes, []byte(val.CropId))
+	bodyBytes = append(bodyBytes, []byte(cropBody.DataType)) //add column here，注意顺序，加到集合最后
+	bodyBytes = append(bodyBytes, []byte(cropBody.Id))
+	bodyBytes = append(bodyBytes, []byte(cropBody.HashInfo))
+
+	//调用智能合约,这里必须要修改 resp
+	resp, err := bc.ChannelExecute("updateCrop", bodyBytes)
+	if err != nil {
+		appG.Response(http.StatusInternalServerError, "失败", err.Error())
+		return
+	}
+	// 反序列化json
+	// var data []map[string]interface{}
+	// if err = json.Unmarshal(bytes.NewBuffer(resp.Payload).Bytes(), &data); err != nil {
+	// 	appG.Response(http.StatusInternalServerError, "失败", err.Error())
+	// 	return
+	// }
+	appG.Response(http.StatusOK, "成功", resp)
+}

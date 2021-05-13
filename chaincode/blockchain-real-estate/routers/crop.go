@@ -1,3 +1,11 @@
+/*
+ * @Descripttion:
+ * @version:
+ * @Author: fmy1993
+ * @Date: 2021-03-30 11:02:29
+ * @LastEditors: fmy1993
+ * @LastEditTime: 2021-05-12 21:59:33
+ */
 package routers
 
 import (
@@ -77,4 +85,35 @@ func QueryCrop(stub shim.ChaincodeStubInterface, args []string) pb.Response {
 		return shim.Error(fmt.Sprintf("QueryCropList-序列化出错: %s", err))
 	}
 	return shim.Success(cropListByte)
+}
+
+// 根据账本数据库的id更新账本数据库
+func UpdateCrop(stub shim.ChaincodeStubInterface, args []string) pb.Response {
+	// 验证参数
+	if len(args) != 3 { //2 { 增加参数
+		return shim.Error("参数个数不满足")
+	}
+	datatype := args[0]
+	id := args[1]
+	hashinfo := args[2]
+
+	if id == "" || hashinfo == "" || datatype == "" {
+		return shim.Error("参数存在空值")
+	}
+	Crop := &lib.Crop{
+		DataType: datatype,
+		Id:       id,
+		HashInfo: hashinfo,
+	}
+
+	if err := utils.DelLedger(stub, lib.CropKey, []string{Crop.DataType + "-" + Crop.Id}); err != nil {
+		return shim.Error(fmt.Sprintf("%s", err))
+	}
+	//将成功创建的信息返回
+	CropByte, err := json.Marshal(Crop)
+	if err != nil {
+		return shim.Error(fmt.Sprintf("序列化成功创建的信息出错: %s", err))
+	}
+	// 成功返回
+	return shim.Success(CropByte) //返回的数据会存在这个结构体的payload中
 }

@@ -15,6 +15,7 @@ require (
 	github.com/go-critic/go-critic v0.5.5 // indirect
 	github.com/go-ini/ini v1.62.0
 	github.com/go-logfmt/logfmt v0.5.0 // indirect
+	github.com/go-sql-driver/mysql v1.6.0 // indirect
 	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e // indirect
 	github.com/golang/mock v1.5.0 // indirect
 	github.com/golang/protobuf v1.5.1 // indirect
@@ -28,8 +29,9 @@ require (
 	github.com/hyperledger/fabric v1.4.11
 	github.com/hyperledger/fabric-amcl v0.0.0-20200424173818-327c9e2cf77a // indirect
 	github.com/hyperledger/fabric-config v0.1.0 // indirect
-	github.com/hyperledger/fabric-protos-go v0.0.0-20210318103044-13fdee960194 // indirect
+	github.com/hyperledger/fabric-protos-go v0.0.0-20210318103044-13fdee960194
 	github.com/hyperledger/fabric-sdk-go v1.0.0
+	github.com/jinzhu/gorm v1.9.16 // indirect
 	github.com/jmoiron/sqlx v1.3.1 // indirect
 	github.com/jonboulle/clockwork v0.2.2 // indirect
 	github.com/json-iterator/go v1.1.10 // indirect

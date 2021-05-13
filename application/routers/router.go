@@ -1,3 +1,11 @@
+/*
+ * @Descripttion:
+ * @version:
+ * @Author: fmy1993
+ * @Date: 2021-03-23 11:20:56
+ * @LastEditors: fmy1993
+ * @LastEditTime: 2021-05-12 21:35:47
+ */
 /**
  * @Author: 夜央 Oh oh oh oh oh oh (https://github.com/togettoyou)
  * @Email: zoujh99@qq.com
@@ -46,6 +54,7 @@ func InitRouter() *gin.Engine {
 		apiV1.POST("/queryDonatingListByGrantee", v1.QueryDonatingListByGrantee)
 		apiV1.POST("/updateDonating", v1.UpdateDonating)
 		apiV1.POST("/addCrop", v1.AddCrop)
+		apiV1.POST("/updateCrop", v1.UpdateCrop)
 	}
 	// 静态文件路由
 	//r.StaticFS("/web", http.Dir("."))

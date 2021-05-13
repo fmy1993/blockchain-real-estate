@@ -499,6 +499,27 @@ paths:
           schema:
             $ref: '#/definitions/app.Response'
       summary: 根据参与销售人、买家(买家AccountId)查询销售(参与的)
+  /api/v1/updateCrop:
+    post:
+      parameters:
+      - description: crop
+        in: body
+        name: Crop
+        required: true
+        schema:
+          $ref: '#/definitions/v1.Crop'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/app.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/app.Response'
+      summary: 增加上链数据
   /api/v1/updateDonating:
     post:
       parameters:

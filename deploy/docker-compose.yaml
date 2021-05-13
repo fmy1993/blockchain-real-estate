@@ -60,7 +60,7 @@ services:
       - CORE_PEER_ADDRESS=peer1.org0.blockchainrealestate.com:7051
     ports:
       - 17051:7051 #其他节点都是和anchor节点通信，注意端口号
-      - 17053:7053
+      - 17053:7053 #使用HOST:CONTAINER格式或者只是指定容器的端口，宿主机会随机映射端口
     volumes:
       - /var/run/:/host/var/run/
       - ./crypto-config/peerOrganizations/org0.blockchainrealestate.com/peers/peer1.org0.blockchainrealestate.com:/etc/hyperledger/peer

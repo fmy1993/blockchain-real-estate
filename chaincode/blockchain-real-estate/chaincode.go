@@ -80,6 +80,9 @@ func (t *BlockChainRealEstate) Invoke(stub shim.ChaincodeStubInterface) pb.Respo
 		return routers.CreateCrop(stub, args)
 	case "queryCrop":
 		return routers.QueryCrop(stub, args)
+	case "updateCrop":
+		return routers.UpdateCrop(stub, args)
+
 	default:
 		return shim.Error(fmt.Sprintf("没有该功能: %s", funcName))
 	}

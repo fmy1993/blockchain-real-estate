@@ -41,7 +41,7 @@ func Init() {
 func ChannelExecute(fcn string, args [][]byte) (channel.Response, error) {
 	// 创建客户端，表明在通道的身份
 	ctx := SDK.ChannelContext(ChannelName, fabsdk.WithOrg(Org), fabsdk.WithUser(User))
-	cli, err := channel.New(ctx)
+	cli, err := channel.New(ctx) //得到一个cli
 	if err != nil {
 		return channel.Response{}, err
 	}

@@ -1,4 +1,5 @@
 # "OrdererOrgs" - 定义管理排序节点的组织
+# order节点自己也有组织，可以有多个order节点
 OrdererOrgs:
   - Name: Orderer # 组织的名字
     Domain: blockchainrealestate.com # 域名

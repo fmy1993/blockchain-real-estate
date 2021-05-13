@@ -37,7 +37,7 @@ func WriteLedger(obj interface{}, stub shim.ChaincodeStubInterface, objectType s
 
 //删除账本
 func DelLedger(stub shim.ChaincodeStubInterface, objectType string, keys []string) error {
-	//创建复合主键
+	//创建复合主键,重新创建复合主键，根据这个复合主键删除账本中的数据
 	var key string
 	if val, err := stub.CreateCompositeKey(objectType, keys); err != nil {
 		return errors.New(fmt.Sprintf("%s-创建复合主键出错 %s", objectType, err))
