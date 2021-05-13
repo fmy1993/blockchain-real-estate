@@ -543,7 +543,7 @@
                 "produces": [
                     "application/json"
                 ],
-                "summary": "增加上链数据",
+                "summary": "删除账本数据，保持id和datatype两个字段的值和上链时一样 eg:id:711,datatype:test",
                 "parameters": [
                     {
                         "description": "crop",

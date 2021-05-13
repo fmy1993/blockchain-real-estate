@@ -112,7 +112,7 @@ func QueryCrop(c *gin.Context) {
 	appG.Response(http.StatusOK, "成功", data)
 }
 
-// @Summary 增加上链数据
+// @Summary 删除账本数据，保持id和datatype两个字段的值和上链时一样 eg:id:711,datatype:test
 // @Param Crop body Crop true "crop"
 // @Produce  json
 // @Success 200 {object} app.Response
