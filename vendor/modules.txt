@@ -290,6 +290,8 @@ github.com/go-playground/locales/currency
 github.com/go-playground/universal-translator
 # github.com/go-playground/validator/v10 v10.2.0
 github.com/go-playground/validator/v10
+# github.com/go-sql-driver/mysql v1.6.0
+## explicit
 # github.com/go-toolsmith/astcast v1.0.0
 github.com/go-toolsmith/astcast
 # github.com/go-toolsmith/astcopy v1.0.0
@@ -666,6 +668,8 @@ github.com/inconshreveable/mousetrap
 github.com/jgautheron/goconst
 # github.com/jingyugao/rowserrcheck v0.0.0-20210130005344-c6a0c12dd98d
 github.com/jingyugao/rowserrcheck/passes/rowserr
+# github.com/jinzhu/gorm v1.9.16
+## explicit
 # github.com/jirfag/go-printf-func-name v0.0.0-20200119135958-7558a9eaa5af
 github.com/jirfag/go-printf-func-name/pkg/analyzer
 # github.com/jmoiron/sqlx v1.3.1
