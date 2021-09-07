@@ -5,7 +5,7 @@
 
 2020.6.24 更新详细运行步骤
 
-1. 确保你的项目目录为`$GOPATH/src/github.com/togettoyou/blockchain-real-estate`
+1. 确保你的项目目录为`$GOPATH/src/github.com/fmy1993/blockchain-real-estate`
 2. 项目由于未使用mod管理，请先将go mod环境设置为auto： `go env -w GO111MODULE=auto`
 3. 首先测试chaincode是否正常调用，运行`chaincode/blockchain-real-estate/chaincode_test.go`测试用例
 ![image](https://user-images.githubusercontent.com/55381228/85498013-8200a100-b611-11ea-938f-9ac1d3ad5b89.png)
@@ -29,7 +29,7 @@
 
 注：本项目需放在 `$GOPATH/src/github.com/togettoyou/blockchain-real-estate` 下运行
 
-## [在线体验地址](http://blockchain.togettoyou.com/web) 
+## [在线体验地址](http://blockchain.fmy1993.com/web) 
 
 ## 技术栈
 
@@ -45,11 +45,11 @@
 >
 > 我的本机环境参考：
 >
-> ![Snipaste_2020-03-19_14-52-13](https://github.com/togettoyou/blockchain-real-estate/blob/master/screenshots/Snipaste_2020-03-19_14-52-13.png)
+> ![Snipaste_2020-03-19_14-52-13](https://github.com/fmy1993/blockchain-real-estate/blob/master/screenshots/Snipaste_2020-03-19_14-52-13.png)
 
 
 
-1、克隆本项目放在 `$GOPATH/src/github.com/togettoyou/blockchain-real-estate` 下
+1、克隆本项目放在 `$GOPATH/src/github.com/fmy1993/blockchain-real-estate` 下
 
 2、进入deploy目录，执行`start.sh`脚本
 
@@ -111,7 +111,7 @@ yarn build:prod
 
 ## 演示效果图
 
-![Mar-19-2020_15-28-20](https://github.com/togettoyou/blockchain-real-estate/blob/master/screenshots/Mar-19-2020_15-28-20.gif)
+![Mar-19-2020_15-28-20](https://github.com/fmy1993/blockchain-real-estate/blob/master/screenshots/Mar-19-2020_15-28-20.gif)
 
 ## 感谢
 
