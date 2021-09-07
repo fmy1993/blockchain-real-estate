@@ -41,7 +41,7 @@
 
 ## 运行
 
-> 默认已经安装Hyperledger Fabric环境，如果未安装，参考：https://www.yuque.com/togettoyou/blog/his57f
+> 默认已经安装Hyperledger Fabric环境，如果未安装，参考：https://www.yuque.com/fmy1993/blog/his57f
 >
 > 我的本机环境参考：
 >
